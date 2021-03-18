@@ -58,6 +58,13 @@ wait() {
     /usr/bin/${SERVICE}.sh wait $DEV
 }
 
+reload() {
+    debug "reloading frr.conf..."
+
+    # reload frr config to apply diff
+    /usr/bin/docker exec -i bgp /usr/lib/frr/frr-reload
+}
+
 stop() {
     debug "Stopping ${SERVICE}$DEV service..."
 
@@ -92,11 +99,11 @@ else
 fi
 
 case "$1" in
-    start|wait|stop)
+    start|wait|stop|reload)
         $1
         ;;
     *)
-        echo "Usage: $0 {start|wait|stop}"
+        echo "Usage: $0 {start|wait|stop|reload}"
         exit 1
         ;;
 esac
