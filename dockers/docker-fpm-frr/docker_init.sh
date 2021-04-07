@@ -21,7 +21,6 @@ CFGGEN_PARAMS=" \
 
 FRR_VARS=$(sonic-cfggen $CFGGEN_PARAMS)
 MGMT_FRAMEWORK_CONFIG=$(echo $FRR_VARS | jq -r '.frr_mgmt_framework_config')
-CONFIG_TYPE=$(echo $FRR_VARS | jq -r '.docker_routing_config_mode')
 if [ -z "$MGMT_FRAMEWORK_CONFIG" ] || [ "$MGMT_FRAMEWORK_CONFIG" == "false" ]; then
     rm /etc/frr/bfdd.conf /etc/frr/ospfd.conf
 fi
@@ -56,14 +55,9 @@ if [[ ! -z "$NAMESPACE_ID" ]]; then
    update_default_gw 6
 fi
 
-if [ -z "$CONFIG_TYPE" ] || [ "$CONFIG_TYPE" == "separated" ]; then
-    echo "no service integrated-vtysh-config" > /etc/frr/vtysh.conf
-    rm -f /etc/frr/frr.conf
-elif [ "$CONFIG_TYPE" == "unified" ]; then
-    echo "service integrated-vtysh-config" > /etc/frr/vtysh.conf
-    rm -f /etc/frr/bgpd.conf /etc/frr/zebra.conf /etc/frr/staticd.conf \
-          /etc/frr/bfdd.conf /etc/frr/ospfd.conf /etc/frr/pimd.conf
-fi
+echo "service integrated-vtysh-config" > /etc/frr/vtysh.conf
+rm -f /etc/frr/bgpd.conf /etc/frr/zebra.conf /etc/frr/staticd.conf \
+  /etc/frr/bfdd.conf /etc/frr/ospfd.conf /etc/frr/pimd.conf
 
 chown -R frr:frr /etc/frr/
 
